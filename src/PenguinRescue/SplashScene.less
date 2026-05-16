@@ -25,39 +25,39 @@
     animation: pr-splash-aurora 18s ease-in-out infinite alternate;
   }
 
-  // Layered ice plane — a richer multi-stop gradient so the snowfield reads
-  // as a soft fade from far-distance to near. The icebergs sit on this and
-  // their bases anchor to the same horizon line at 22% from the bottom.
+  // Ice plane — the TOP starts with the same dark navy as the iceberg wet-base
+  // ellipses so the two layers visually merge (no horizontal break line, no
+  // "floating icebergs"). It then quickly fades up to bright snow and gently
+  // back down to mid-blue at the foreground for depth.
   &__ice {
     position: absolute;
     inset: 78% 0 0 0;
     background:
       linear-gradient(180deg,
-        #d6e6f1 0%,
-        #c3dbeb 18%,
-        #aacae0 38%,
-        #88add0 62%,
-        #6b9ac3 82%,
-        #4f86b3 100%);
-    // Soft snow-glint highlight along the horizon
-    box-shadow:
-      inset 0 6px 0 rgba(255,255,255,.55),
-      inset 0 14px 30px rgba(255,255,255,.18),
-      inset 0 -40px 40px rgba(40, 90, 130, .25);
+        #1c3650 0%,        // wet-ice shadow — matches iceberg base ellipses
+        #4a7393 4%,
+        #8eb5d0 10%,
+        #cce1ee 22%,       // bright snowfield
+        #d6e6f1 40%,
+        #c3dbeb 60%,
+        #aacae0 80%,
+        #88a8c0 100%);
   }
 
-  // Iceberg silhouettes — bottom edge dips 3% INTO the ice plane so the
-  // wet-base ellipses merge with the snowfield instead of stopping at a line.
+  // Iceberg silhouettes — bottom aligned EXACTLY with the ice plane top so
+  // there's no gap and no transparent strip between the two. The wet-base
+  // ellipses sit just inside the container, the dark-navy ice plane top
+  // continues the shadow directly below.
   &__icebergs {
     position: absolute;
-    bottom: 19%;
-    height: 24%;
+    bottom: 22%;
+    height: 22%;
     pointer-events: none;
     svg { width: 100%; height: 100%; display: block; overflow: visible; }
     &--back {
       left: -50%;
       width: 200%;
-      bottom: 22%;
+      bottom: 24%;
       height: 14%;
       opacity: .55;
       filter: blur(.5px);

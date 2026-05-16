@@ -53,7 +53,7 @@ export function SplashScene({ onStart, highScore }: { onStart: () => void; highS
           Each iceberg sits on a dark wet-ice ellipse so its base reads as
           attached to the snow surface rather than floating above it. */}
       <div className="pr-splash__icebergs pr-splash__icebergs--back">
-        <svg viewBox="0 0 1200 220" preserveAspectRatio="xMidYEnd meet" width="200%" height="100%">
+        <svg viewBox="0 0 1200 220" preserveAspectRatio="none" width="200%" height="100%">
           <ellipse cx="130"  cy="198" rx="95"  ry="6" fill="#1f3d5a" opacity=".55" />
           <ellipse cx="290"  cy="198" rx="85"  ry="6" fill="#1f3d5a" opacity=".55" />
           <ellipse cx="460"  cy="198" rx="100" ry="7" fill="#1f3d5a" opacity=".6"  />
@@ -71,7 +71,7 @@ export function SplashScene({ onStart, highScore }: { onStart: () => void; highS
         </svg>
       </div>
       <div className="pr-splash__icebergs pr-splash__icebergs--front">
-        <svg viewBox="0 0 800 210" preserveAspectRatio="xMidYEnd meet" width="100%" height="100%">
+        <svg viewBox="0 0 800 210" preserveAspectRatio="none" width="100%" height="100%">
           {/* wet bases — dark navy ellipses anchor each iceberg to the ice */}
           <ellipse cx="60"  cy="200" rx="115" ry="8" fill="#1c3650" opacity=".85" />
           <ellipse cx="220" cy="200" rx="115" ry="8" fill="#1c3650" opacity=".85" />
