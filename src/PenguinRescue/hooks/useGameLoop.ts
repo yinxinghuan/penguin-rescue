@@ -131,10 +131,11 @@ export function useGameLoop({ state, playing, stick, onScore, onGameOver, playSf
         d.headRot = Math.atan2(dir.x, dir.z);
       }
     }
-    // clamp to playfield
-    const bound = PLAYFIELD / 2 - 1;
-    d.headPos.x = THREE.MathUtils.clamp(d.headPos.x, -bound, bound);
-    d.headPos.z = THREE.MathUtils.clamp(d.headPos.z, -bound, bound);
+    // Original clamp: head can travel up to length PLAYFIELD*2 from origin —
+    // a much wider world than what's visible. The camera follows the player,
+    // so leaving the ice rink is allowed; you just lose the babies behind.
+    const maxLen = PLAYFIELD * 2;
+    if (d.headPos.length() > maxLen) d.headPos.setLength(maxLen);
 
     // ===== BODY CHAIN FOLLOW =====
     d.bodyParts.forEach((seg, i) => {

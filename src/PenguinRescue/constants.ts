@@ -29,9 +29,11 @@ export const COLOR_TYPES = 8;           // baby penguin color variants
 export const CAMERA_POS: [number, number, number] = [0, 35, 15];
 export const CAMERA_FOV = 50;
 
-// Initial skua position — well outside the playfield so the player has time
-// to read the screen and start moving before being hunted.
-export const SKUA_START: [number, number, number] = [-14, 3, -14];
+// Skua start: same as the original eagle — INSIDE the iceberg ring at
+// (-10, 3, -10), distance ~14.1 from the player. Putting it outside the ring
+// gets it stuck on the dense border icebergs and the player never dies.
+export const SKUA_START: [number, number, number] = [-10, 3, -10];
 
-// Grace period (seconds) before kill/threat collision starts being evaluated.
-export const GRACE_PERIOD = 3;
+// Grace period before kill/threat collision is evaluated. With the original
+// start position the skua reaches the player in ~4s, so a short grace is fine.
+export const GRACE_PERIOD = 1.5;

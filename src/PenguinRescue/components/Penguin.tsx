@@ -1,4 +1,5 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { RoundedBox } from '@react-three/drei';
 
@@ -28,14 +29,27 @@ export function Penguin({ isLeader = false, colorType = 0, scale = 1 }: PenguinP
 
   const s = isLeader ? 1 : 0.72;
   const sz = s * scale;
+  const bounceRef = useRef<THREE.Group>(null);
+  // Stagger each penguin's hop a bit so the chain isn't perfectly synced.
+  const phase = useMemo(() => Math.random() * Math.PI * 2, []);
+
+  useFrame(({ clock }) => {
+    const g = bounceRef.current;
+    if (!g) return;
+    const t = clock.getElapsedTime() * 6 + phase;
+    g.position.y = Math.abs(Math.sin(t)) * 0.6;
+    g.rotation.z = Math.sin(t) * 0.1;
+    g.rotation.x = 0.1;
+  });
 
   return (
     <group scale={sz}>
-      {/* contact shadow disc — anchors the character on the ice */}
+      {/* contact shadow stays on the ice while the body hops above */}
       <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[0.55, 24]} />
         <meshBasicMaterial color="#0a1a2a" transparent opacity={0.35} />
       </mesh>
+      <group ref={bounceRef}>
       {/* body */}
       <RoundedBox args={[0.95, 1.15, 0.85]} radius={0.38} smoothness={6} position={[0, 0.6, 0]} castShadow receiveShadow>
         <meshStandardMaterial color={palette.body} roughness={0.7} />
@@ -95,6 +109,7 @@ export function Penguin({ isLeader = false, colorType = 0, scale = 1 }: PenguinP
           <meshStandardMaterial color={palette.crown} emissive={palette.crown} emissiveIntensity={0.4} />
         </mesh>
       )}
+      </group>{/* /bounceRef */}
     </group>
   );
 }

@@ -19,17 +19,29 @@ interface SceneProps {
   haptic?: (k: 'light' | 'heavy') => void;
 }
 
-// Sets up the camera once on mount / resize.
-function CameraSetup() {
+// Follow-camera: each frame, lerp toward `head + (0, 35, 15)` and lookAt(head).
+// This is the original game's setup — player stays centered, world scrolls.
+function FollowCamera({ state }: { state: React.MutableRefObject<GameRef> }) {
   const { camera, size } = useThree();
+  const offset = useRef(new THREE.Vector3(...CAMERA_POS));
+  const target = useRef(new THREE.Vector3());
+
   useEffect(() => {
-    camera.position.set(...CAMERA_POS);
+    const head = state.current.headPos;
+    camera.position.set(head.x + CAMERA_POS[0], head.y + CAMERA_POS[1], head.z + CAMERA_POS[2]);
     (camera as THREE.PerspectiveCamera).fov = CAMERA_FOV;
     (camera as THREE.PerspectiveCamera).near = 0.1;
     (camera as THREE.PerspectiveCamera).far = 200;
-    camera.lookAt(0, 0, 0);
+    camera.lookAt(head.x, 0, head.z);
     (camera as THREE.PerspectiveCamera).updateProjectionMatrix();
-  }, [camera, size.width, size.height]);
+  }, [camera, size.width, size.height, state]);
+
+  useFrame(() => {
+    const head = state.current.headPos;
+    target.current.copy(head).add(offset.current);
+    camera.position.lerp(target.current, 0.1);
+    camera.lookAt(head.x, 0, head.z);
+  });
   return null;
 }
 
@@ -130,7 +142,7 @@ export function Scene({ state, playing, stickRef, onScore, onGameOver, playSfx, 
 
   return (
     <>
-      <CameraSetup />
+      <FollowCamera state={state} />
       <fog attach="fog" args={['#0a2238', PLAYFIELD * 0.9, PLAYFIELD * 2.2]} />
       <ambientLight intensity={0.45} />
       <directionalLight
