@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { useThree } from '@react-three/fiber';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { CAMERA_FOV, CAMERA_POS, PLAYFIELD } from '../constants';
 import { Penguin } from './Penguin';
@@ -19,7 +19,7 @@ interface SceneProps {
   haptic?: (k: 'light' | 'heavy') => void;
 }
 
-// Set up the default camera position and orientation once.
+// Sets up the camera once on mount / resize.
 function CameraSetup() {
   const { camera, size } = useThree();
   useEffect(() => {
@@ -33,27 +33,73 @@ function CameraSetup() {
   return null;
 }
 
-// Per-actor follower component — uses refs directly to avoid React re-renders.
-function FollowMesh({
-  posRef, rotRef, children,
-}: { posRef: () => THREE.Vector3; rotRef: () => number; children: React.ReactNode }) {
-  const ref = useRef<THREE.Group>(null);
-  useEffect(() => {
-    let raf = 0;
-    const tick = () => {
-      raf = requestAnimationFrame(tick);
-      if (!ref.current) return;
-      ref.current.position.copy(posRef());
-      ref.current.rotation.y = rotRef();
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [posRef, rotRef]);
-  return <group ref={ref}>{children}</group>;
+// Sync every dynamic actor's <group> transform from game-state refs in a single
+// useFrame callback. Cheap and avoids one RAF per FollowMesh.
+function ActorSync({ state }: { state: React.MutableRefObject<GameRef> }) {
+  const leader = useRef<THREE.Group>(null);
+  const skuaRef = useRef<THREE.Group>(null);
+  const bodyRefs = useRef<Map<number, THREE.Group>>(new Map());
+  const babyRefs = useRef<Map<number, THREE.Group>>(new Map());
+  const sealRefs = useRef<Map<number, THREE.Group>>(new Map());
+
+  useFrame(() => {
+    const d = state.current;
+    if (leader.current) {
+      leader.current.position.copy(d.headPos);
+      leader.current.rotation.y = d.headRot;
+    }
+    if (skuaRef.current) {
+      skuaRef.current.position.copy(d.skuaPos);
+      skuaRef.current.rotation.y = d.skuaRot;
+    }
+    for (const seg of d.bodyParts) {
+      const g = bodyRefs.current.get(seg.id);
+      if (g) { g.position.copy(seg.position); g.rotation.y = seg.rotation; }
+    }
+    for (const baby of d.babies) {
+      const g = babyRefs.current.get(baby.id);
+      if (g) g.position.copy(baby.position);
+    }
+    for (const seal of d.seals) {
+      const g = sealRefs.current.get(seal.id);
+      if (g) { g.position.copy(seal.position); g.rotation.y = seal.rotation; }
+    }
+  });
+
+  const d = state.current;
+  return (
+    <>
+      <group ref={leader}><Penguin isLeader /></group>
+      <group ref={skuaRef}><Skua /></group>
+      {d.bodyParts.map(seg => (
+        <group key={`b_${seg.id}`} ref={el => {
+          if (el) bodyRefs.current.set(seg.id, el);
+          else bodyRefs.current.delete(seg.id);
+        }}>
+          <Penguin colorType={seg.colorType} />
+        </group>
+      ))}
+      {d.babies.map(baby => (
+        <group key={`s_${baby.id}`} ref={el => {
+          if (el) babyRefs.current.set(baby.id, el);
+          else babyRefs.current.delete(baby.id);
+        }}>
+          <Penguin colorType={baby.colorType} />
+        </group>
+      ))}
+      {d.seals.map(seal => (
+        <group key={`d_${seal.id}`} ref={el => {
+          if (el) sealRefs.current.set(seal.id, el);
+          else sealRefs.current.delete(seal.id);
+        }}>
+          <Seal />
+        </group>
+      ))}
+    </>
+  );
 }
 
 export function Scene({ state, playing, stickRef, onScore, onGameOver, playSfx, haptic }: SceneProps) {
-  // Run the game loop hook inside <Canvas> (it uses useFrame).
   useGameLoop({
     state,
     playing,
@@ -64,19 +110,23 @@ export function Scene({ state, playing, stickRef, onScore, onGameOver, playSfx, 
     haptic,
   });
 
-  // Tick lightly so dynamic arrays (babies/seals/bodyParts) reflect spawning/despawn.
+  // Re-render only when entity counts change (spawn / pickup / despawn).
   const [, force] = useState(0);
-  useEffect(() => {
-    let raf = 0;
-    const loop = () => {
-      raf = requestAnimationFrame(loop);
-      force(t => (t + 1) % 1_000_000);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+  const lastSizes = useRef({ b: -1, s: -1, p: -1 });
+  useFrame(() => {
+    const d = state.current;
+    if (
+      d.babies.length    !== lastSizes.current.b ||
+      d.seals.length     !== lastSizes.current.s ||
+      d.bodyParts.length !== lastSizes.current.p
+    ) {
+      lastSizes.current = { b: d.babies.length, s: d.seals.length, p: d.bodyParts.length };
+      force(x => x + 1);
+    }
+  });
 
-  const d = state.current;
+  // Stable iceberg list — never changes during a game, so render once.
+  const icebergs = useMemo(() => state.current.icebergs, [state.current.icebergs]);
 
   return (
     <>
@@ -96,31 +146,29 @@ export function Scene({ state, playing, stickRef, onScore, onGameOver, playSfx, 
         shadow-camera-far={80}
         shadow-bias={-0.0008}
       />
-      {/* sky-ish hemisphere fill */}
       <hemisphereLight args={['#9bc1e0', '#4a5a78', 0.35]} />
 
-      {/* outer water — extends well beyond the visible playfield */}
+      {/* outer water */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.05, 0]} receiveShadow>
         <planeGeometry args={[PLAYFIELD * 4, PLAYFIELD * 4]} />
         <meshStandardMaterial color="#1f4a6b" />
       </mesh>
-      {/* dark water ripple ring just outside the ice */}
+      {/* darker ring just outside the ice */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
         <ringGeometry args={[PLAYFIELD / 2 + 2.5, PLAYFIELD / 2 + 12, 64]} />
         <meshStandardMaterial color="#0d2c46" />
       </mesh>
-      {/* main ice rink — round disc that fully contains the iceberg ring */}
+      {/* main ice rink */}
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <circleGeometry args={[PLAYFIELD / 2 + 4, 64]} />
         <meshStandardMaterial color="#bfd9ea" roughness={0.95} />
       </mesh>
-      {/* inner brighter ice patch — gives a soft glow center for contrast */}
+      {/* inner brighter ice */}
       <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.005, 0]}>
         <circleGeometry args={[PLAYFIELD / 2 - 2, 48]} />
         <meshStandardMaterial color="#e0eef7" roughness={0.85} />
       </mesh>
-      {/* dark sea-ice cracks — non-radial, off-center so they don't form a star.
-          Hand-picked seeds for an organic broken-floe look. */}
+      {/* hand-placed sea-ice cracks */}
       {[
         { x: -7, z:  3, rot: 0.4,  len: 14, w: 0.30 },
         { x:  5, z: -6, rot: 1.7,  len: 10, w: 0.22 },
@@ -139,53 +187,11 @@ export function Scene({ state, playing, stickRef, onScore, onGameOver, playSfx, 
         </mesh>
       ))}
 
-      {/* Icebergs */}
-      {d.icebergs.map(ice => (
+      {icebergs.map(ice => (
         <Iceberg key={ice.id} id={ice.id} position={[ice.position.x, ice.position.y, ice.position.z]} scale={1.4} />
       ))}
 
-      {/* Leader penguin */}
-      <FollowMesh posRef={() => d.headPos} rotRef={() => d.headRot}>
-        <Penguin isLeader />
-      </FollowMesh>
-
-      {/* Skua — flying overhead, hunts the leader */}
-      <FollowMesh posRef={() => d.skuaPos} rotRef={() => d.skuaRot}>
-        <Skua />
-      </FollowMesh>
-
-      {/* Body chain */}
-      {d.bodyParts.map(seg => (
-        <FollowMesh
-          key={`b_${seg.id}`}
-          posRef={() => seg.position}
-          rotRef={() => seg.rotation}
-        >
-          <Penguin colorType={seg.colorType} />
-        </FollowMesh>
-      ))}
-
-      {/* Stray babies */}
-      {d.babies.map(baby => (
-        <FollowMesh
-          key={`s_${baby.id}`}
-          posRef={() => baby.position}
-          rotRef={() => 0}
-        >
-          <Penguin colorType={baby.colorType} />
-        </FollowMesh>
-      ))}
-
-      {/* Seals */}
-      {d.seals.map(seal => (
-        <FollowMesh
-          key={`d_${seal.id}`}
-          posRef={() => seal.position}
-          rotRef={() => seal.rotation}
-        >
-          <Seal />
-        </FollowMesh>
-      ))}
+      <ActorSync state={state} />
     </>
   );
 }

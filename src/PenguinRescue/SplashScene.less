@@ -1,0 +1,299 @@
+.pr-splash {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  overflow: hidden;
+  color: #f4f4f4;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  &__sky {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(70% 50% at 50% 0%, #1a3c5e 0%, #0a1928 55%, #050d1a 100%);
+  }
+
+  // Soft green/cyan aurora swirl across the top half
+  &__aurora {
+    position: absolute;
+    inset: -10% 0 50% 0;
+    background:
+      radial-gradient(60% 80% at 20% 30%, rgba(73, 222, 178, .18) 0%, transparent 70%),
+      radial-gradient(50% 70% at 75% 40%, rgba(110, 188, 246, .22) 0%, transparent 70%),
+      radial-gradient(40% 60% at 50% 10%, rgba(180, 130, 220, .14) 0%, transparent 65%);
+    filter: blur(8px);
+    animation: pr-splash-aurora 18s ease-in-out infinite alternate;
+  }
+
+  // Ice plane at the bottom 40%, with a subtle gradient
+  &__ice {
+    position: absolute;
+    inset: 60% 0 0 0;
+    background:
+      linear-gradient(180deg, #cce1ee 0%, #aac9dd 60%, #88a8c0 100%);
+    box-shadow: inset 0 4px 0 rgba(255,255,255,.7);
+  }
+
+  &__icebergs {
+    position: absolute;
+    inset: 50% 0 0 0;
+    width: 100%;
+    height: 50%;
+    pointer-events: none;
+  }
+
+  &__snow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  &__flake {
+    position: absolute;
+    top: -10px;
+    background: #fff;
+    border-radius: 50%;
+    opacity: .8;
+    box-shadow: 0 0 6px rgba(255,255,255,.6);
+    animation-name: pr-splash-snowfall;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+
+  &__babies {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  &__baby {
+    position: absolute;
+    width: 28px;
+    height: 36px;
+    transform-origin: center bottom;
+    animation: pr-splash-waddle 2.2s ease-in-out infinite;
+    filter: drop-shadow(0 6px 6px rgba(0,0,0,.35));
+  }
+  &__baby-body {
+    position: absolute; inset: 0;
+    border-radius: 14px 14px 12px 12px / 18px 18px 12px 12px;
+  }
+  &__baby-belly {
+    position: absolute;
+    left: 5px; right: 5px; top: 9px; bottom: 4px;
+    background: #f4ecd8;
+    border-radius: 50% 50% 45% 45% / 60% 60% 45% 45%;
+  }
+  &__baby-beak {
+    position: absolute;
+    left: 50%; top: 11px;
+    width: 6px; height: 4px;
+    background: #f7b04a;
+    border-radius: 2px 2px 3px 3px;
+    transform: translateX(-50%);
+  }
+  &__baby-eye {
+    position: absolute;
+    top: 7px;
+    width: 3px; height: 3px;
+    background: #0a0a0a;
+    border-radius: 50%;
+    &--l { left: 8px; }
+    &--r { right: 8px; }
+  }
+
+  // Skua circling overhead — uses a wrapping rotation to fly in a wide oval
+  &__skua {
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    width: 0; height: 0;
+    transform-origin: 0 0;
+    animation: pr-splash-skua-orbit 11s linear infinite;
+    svg {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      animation: pr-splash-skua-flap 0.6s ease-in-out infinite alternate;
+      filter: drop-shadow(0 8px 8px rgba(0,0,0,.45));
+    }
+  }
+  // moving shadow on the ice that follows the skua's horizontal motion
+  &__skua-shadow {
+    position: absolute;
+    top: 72%;
+    left: 50%;
+    width: 60px;
+    height: 14px;
+    background: rgba(0,0,0,.32);
+    border-radius: 50%;
+    filter: blur(3px);
+    transform: translate(-50%, -50%);
+    animation: pr-splash-skua-shadow 11s linear infinite;
+  }
+
+  &__content {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    padding-bottom: max(24px, env(safe-area-inset-bottom));
+    text-align: center;
+  }
+
+  &__eyebrow {
+    font-size: 11px;
+    letter-spacing: .35em;
+    color: rgba(170, 220, 255, .65);
+    margin-bottom: 18px;
+    font-weight: 600;
+  }
+  &__title {
+    margin: 0 0 14px;
+    font-size: 58px;
+    font-weight: 900;
+    letter-spacing: -.03em;
+    line-height: .95;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    text-shadow:
+      0 4px 0 rgba(255,255,255,.05),
+      0 6px 28px rgba(50, 150, 220, .45),
+      0 0 80px rgba(120, 200, 255, .25);
+  }
+  &__title-emph {
+    background: linear-gradient(180deg, #ffffff 0%, #c4dbeb 70%, #8eb3cc 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    &--accent {
+      background: linear-gradient(180deg, #ffd84a 0%, #ff9844 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 4px 12px rgba(255,170,60,.4));
+    }
+  }
+  &__subtitle {
+    margin: 0 0 28px;
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(220, 235, 250, .82);
+    max-width: 280px;
+  }
+
+  &__rules {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 28px;
+    font-size: 13px;
+    color: rgba(220, 235, 250, .8);
+    font-weight: 500;
+  }
+  &__rule {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-start;
+    text-align: left;
+  }
+  &__rule-icon {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    &--baby {
+      background: linear-gradient(180deg, #1a2336 60%, #f4ecd8 60%);
+      border-radius: 50%;
+    }
+    &--skua {
+      background: #3d2918;
+      clip-path: polygon(50% 0%, 100% 60%, 75% 50%, 60% 100%, 40% 100%, 25% 50%, 0% 60%);
+    }
+    &--joystick {
+      background:
+        radial-gradient(circle at center, #fff 0%, #fff 30%, transparent 32%),
+        radial-gradient(circle at center, rgba(255,255,255,.4) 0%, rgba(255,255,255,.4) 80%, transparent 82%);
+      border-radius: 50%;
+    }
+  }
+
+  &__best {
+    margin-bottom: 18px;
+    padding: 6px 16px;
+    background: rgba(255,255,255,.10);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #ffe17a;
+    letter-spacing: .08em;
+  }
+
+  &__cta {
+    position: relative;
+    background: linear-gradient(135deg, #ffe17a, #ff9844 60%, #ff6b3a);
+    color: #1a1a1a;
+    border: none;
+    padding: 16px 36px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: .03em;
+    cursor: pointer;
+    box-shadow: 0 16px 36px rgba(255, 150, 60, .45), inset 0 1px 0 rgba(255,255,255,.6);
+    z-index: 1;
+    &:active { transform: translateY(1px); }
+  }
+  &__cta-text {
+    position: relative; z-index: 2;
+  }
+  &__cta-pulse {
+    position: absolute;
+    inset: -4px;
+    border-radius: 999px;
+    border: 2px solid rgba(255, 200, 100, .65);
+    animation: pr-splash-cta-pulse 1.8s ease-out infinite;
+    pointer-events: none;
+  }
+}
+
+@keyframes pr-splash-snowfall {
+  0%   { transform: translate(0, -10px); }
+  100% { transform: translate(20px, 110vh); }
+}
+
+@keyframes pr-splash-waddle {
+  0%, 100% { transform: scale(var(--s, 1)) translateY(0) rotate(-4deg); }
+  50%      { transform: scale(var(--s, 1)) translateY(-2px) rotate(4deg); }
+}
+
+@keyframes pr-splash-aurora {
+  0%   { opacity: .55; transform: translateX(-2%); }
+  100% { opacity: .9;  transform: translateX(2%); }
+}
+
+@keyframes pr-splash-skua-orbit {
+  0%   { transform: translate(-130vw,  0); }
+  100% { transform: translate( 130vw,  0); }
+}
+@keyframes pr-splash-skua-flap {
+  0%   { transform: translate(-50%, -50%) scaleY(.85); }
+  100% { transform: translate(-50%, -50%) scaleY(1.15); }
+}
+@keyframes pr-splash-skua-shadow {
+  0%   { transform: translate(calc(-50% - 130vw), -50%) scale(.7); opacity: .15; }
+  50%  { transform: translate(-50%, -50%)                  scale(1);  opacity: .35; }
+  100% { transform: translate(calc(-50% + 130vw), -50%) scale(.7); opacity: .15; }
+}
+
+@keyframes pr-splash-cta-pulse {
+  0%   { transform: scale(.95); opacity: .9;  }
+  100% { transform: scale(1.20); opacity: 0;  }
+}
