@@ -25,8 +25,10 @@ export const SKUA_SCORE_CAP = 5;
 
 export const COLOR_TYPES = 8;           // baby penguin color variants
 
-// Camera
-export const CAMERA_POS: [number, number, number] = [0, 35, 15];
+// Camera — same downward angle as the original (35, 15) but pulled closer so
+// the leader reads at a chunkier scale on the screen. Ratio 22/9.4 ≈ 35/15
+// preserves the camera tilt; distance drops from 38 → 24 (~63%).
+export const CAMERA_POS: [number, number, number] = [0, 22, 9.4];
 export const CAMERA_FOV = 50;
 
 // Skua start: same as the original eagle — INSIDE the iceberg ring at

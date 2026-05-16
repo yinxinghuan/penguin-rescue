@@ -16,10 +16,12 @@ export function Skua() {
     if (rWing.current) rWing.current.rotation.z = -flap;
   });
 
-  const bodyColor = '#5b3e2a';        // dark brown
-  const bellyColor = '#9a7853';       // tan belly
-  const wingDark = '#3d2918';         // primary feathers
-  const beak = '#f7c64a';             // bright hooked beak
+  // Slate / charcoal palette — far enough from the seal's blue-grey to read as
+  // a distinct threat, and away from coffee-brown.
+  const bodyColor  = '#2e2820';
+  const bellyColor = '#6b5f4f';
+  const wingDark   = '#15110c';
+  const beak       = '#ffaa2e';
 
   return (
     <group rotation={[0.15, 0, 0]}>

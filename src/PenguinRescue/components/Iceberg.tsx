@@ -21,17 +21,17 @@ export function Iceberg({ id, position, scale = 1 }: IcebergProps) {
 
   return (
     <group position={position} rotation={[0, v.rot, v.tilt]} scale={scale}>
-      {/* base wet rim — gives a darker contact ring */}
+      {/* base wet rim — strong dark navy to pop against the white ice */}
       <mesh position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <circleGeometry args={[v.r1 * 1.18, 18]} />
-        <meshStandardMaterial color="#5d8bab" roughness={0.9} />
+        <circleGeometry args={[v.r1 * 1.22, 18]} />
+        <meshStandardMaterial color="#1f3d5a" roughness={0.9} />
       </mesh>
-      {/* lower chunky cone — slightly tinted blue */}
+      {/* lower chunky cone — steel blue, far darker than the snowfield */}
       <mesh position={[0, v.h1 * 0.6, 0]} castShadow receiveShadow>
         <coneGeometry args={[v.r1, v.h1 * 1.2, 6]} />
-        <meshStandardMaterial color="#a4c5d8" flatShading roughness={0.7} />
+        <meshStandardMaterial color="#6996b6" flatShading roughness={0.7} />
       </mesh>
-      {/* upper bright peak */}
+      {/* upper bright peak — keeps the snowy tip, reads against the cone */}
       <mesh position={[0, v.h1 * 1.1, 0]} castShadow>
         <coneGeometry args={[v.r1 * 0.55, v.h1 * 0.55, 5]} />
         <meshStandardMaterial color="#f4fbff" flatShading roughness={0.4} />

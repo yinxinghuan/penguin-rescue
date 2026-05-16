@@ -1,9 +1,10 @@
 type Locale = 'zh' | 'en';
 
 function detectLocale(): Locale {
+  // Default to English. Players can opt into Chinese via localStorage.
   const override = localStorage.getItem('game_locale');
   if (override === 'en' || override === 'zh') return override;
-  return navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en';
+  return 'en';
 }
 
 const dict: Record<Locale, Record<string, string>> = {
@@ -23,7 +24,7 @@ const dict: Record<Locale, Record<string, string>> = {
   },
   en: {
     title: 'Penguin Rescue',
-    subtitle: 'Antarctic ice. Lost babies. One killer bird overhead.',
+    subtitle: 'SAVE THE BABIES · DODGE THE SKUA',
     tap_to_start: 'Start rescue',
     rescued: 'Rescued {n} babies',
     again: 'Try again',

@@ -87,12 +87,13 @@ export function PenguinRescue() {
       {showCanvas && (
         <div className="pr__hud">
           <div className="pr__score">
-            <div>
-              <div className="pr__score-label">{t('score')}</div>
-              <div>{score}</div>
-            </div>
+            <div className="pr__score-label">RESCUED</div>
+            <div className="pr__score-value">{String(score).padStart(2, '0')}</div>
             {highScore > 0 && (
-              <div className="pr__hi">{t('high')} {highScore}</div>
+              <div className="pr__hi">
+                <span>BEST</span>
+                <span className="pr__hi-value">{highScore}</span>
+              </div>
             )}
           </div>
           <img className="pr__watermark" src={alteruSvg} alt="AlterU" />
@@ -114,8 +115,13 @@ export function PenguinRescue() {
       {/* Game over */}
       {phase === 'gameover' && (
         <div className="pr__gameover">
+          <div className="pr__gameover-eyebrow">
+            {finalScore > 0 && finalScore === highScore ? 'NEW RECORD' : 'CAUGHT BY THE SKUA'}
+          </div>
           <div className="pr__final-score">{finalScore}</div>
-          <div className="pr__final">{t('rescued', { n: finalScore })}</div>
+          <div className="pr__final">
+            {finalScore === 1 ? '1 BABY RESCUED' : `${finalScore} BABIES RESCUED`}
+          </div>
           <button className="pr__cta" onPointerDown={start}>
             {t('again')}
           </button>

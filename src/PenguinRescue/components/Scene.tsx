@@ -6,6 +6,7 @@ import { Penguin } from './Penguin';
 import { Skua } from './Skua';
 import { Seal } from './Seal';
 import { Iceberg } from './Iceberg';
+import { Snow } from './Snow';
 import { useGameLoop, GameRef } from '../hooks/useGameLoop';
 import type { Stick } from '../types';
 
@@ -195,7 +196,7 @@ export function Scene({ state, playing, stickRef, onScore, onGameOver, playSfx, 
           position={[c.x, 0.01, c.z]}
         >
           <planeGeometry args={[c.w, c.len]} />
-          <meshStandardMaterial color="#0a2238" transparent opacity={0.85} />
+          <meshStandardMaterial color="#7ea2b8" transparent opacity={0.55} />
         </mesh>
       ))}
 
@@ -203,6 +204,7 @@ export function Scene({ state, playing, stickRef, onScore, onGameOver, playSfx, 
         <Iceberg key={ice.id} id={ice.id} position={[ice.position.x, ice.position.y, ice.position.z]} scale={1.4} />
       ))}
 
+      <Snow state={state} />
       <ActorSync state={state} />
     </>
   );
