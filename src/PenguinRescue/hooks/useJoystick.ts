@@ -12,6 +12,10 @@ export function useJoystick(enabled: boolean) {
 
   useEffect(() => {
     if (!enabled) {
+      // CRUCIAL: clear pointerId so a death that fires mid-drag doesn't keep
+      // the captured pointer id alive. Without this, the next game's pointerdown
+      // hits `if (pointerId.current !== null) return` and the joystick is dead.
+      pointerId.current = null;
       stickRef.current.active = false;
       stickRef.current.x = 0;
       stickRef.current.y = 0;

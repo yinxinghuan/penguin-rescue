@@ -49,10 +49,18 @@ export function SplashScene({ onStart, highScore }: { onStart: () => void; highS
       {/* Ice plane sits below the icebergs so they appear to be resting on it */}
       <div className="pr-splash__ice" />
 
-      {/* Iceberg silhouettes — back row drifts slowly, front row stationary */}
+      {/* Iceberg silhouettes — back row drifts slowly, front row stationary.
+          Each iceberg sits on a dark wet-ice ellipse so its base reads as
+          attached to the snow surface rather than floating above it. */}
       <div className="pr-splash__icebergs pr-splash__icebergs--back">
-        <svg viewBox="0 0 1200 240" preserveAspectRatio="xMidYEnd meet" width="200%" height="100%">
-          {/* deep navy distant icebergs */}
+        <svg viewBox="0 0 1200 220" preserveAspectRatio="xMidYEnd meet" width="200%" height="100%">
+          <ellipse cx="130"  cy="198" rx="95"  ry="6" fill="#1f3d5a" opacity=".55" />
+          <ellipse cx="290"  cy="198" rx="85"  ry="6" fill="#1f3d5a" opacity=".55" />
+          <ellipse cx="460"  cy="198" rx="100" ry="7" fill="#1f3d5a" opacity=".6"  />
+          <ellipse cx="620"  cy="198" rx="80"  ry="6" fill="#1f3d5a" opacity=".55" />
+          <ellipse cx="780"  cy="198" rx="100" ry="7" fill="#1f3d5a" opacity=".6"  />
+          <ellipse cx="950"  cy="198" rx="85"  ry="6" fill="#1f3d5a" opacity=".55" />
+          <ellipse cx="1100" cy="198" rx="90"  ry="6" fill="#1f3d5a" opacity=".6"  />
           <polygon fill="#1f3d5a" points="40,200 130,80 220,200" />
           <polygon fill="#1f3d5a" points="200,200 290,130 380,200" />
           <polygon fill="#1f3d5a" points="360,200 460,60 560,200" />
@@ -63,7 +71,14 @@ export function SplashScene({ onStart, highScore }: { onStart: () => void; highS
         </svg>
       </div>
       <div className="pr-splash__icebergs pr-splash__icebergs--front">
-        <svg viewBox="0 0 800 200" preserveAspectRatio="xMidYEnd meet" width="100%" height="100%">
+        <svg viewBox="0 0 800 210" preserveAspectRatio="xMidYEnd meet" width="100%" height="100%">
+          {/* wet bases — dark navy ellipses anchor each iceberg to the ice */}
+          <ellipse cx="60"  cy="200" rx="115" ry="8" fill="#1c3650" opacity=".85" />
+          <ellipse cx="220" cy="200" rx="115" ry="8" fill="#1c3650" opacity=".85" />
+          <ellipse cx="380" cy="200" rx="105" ry="8" fill="#1c3650" opacity=".85" />
+          <ellipse cx="530" cy="200" rx="115" ry="9" fill="#1c3650" opacity=".85" />
+          <ellipse cx="690" cy="200" rx="110" ry="8" fill="#1c3650" opacity=".85" />
+          <ellipse cx="830" cy="200" rx="95"  ry="8" fill="#1c3650" opacity=".85" />
           {/* foreground steel-blue icebergs with bright snow peaks */}
           <polygon fill="#6996b6" points="-30,200 60,90 150,200" />
           <polygon fill="#f4fbff" points="20,140 60,90 100,140" />

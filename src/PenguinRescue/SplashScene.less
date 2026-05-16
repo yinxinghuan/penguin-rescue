@@ -46,17 +46,18 @@
       inset 0 -40px 40px rgba(40, 90, 130, .25);
   }
 
-  // Iceberg silhouettes sit ON the ice — bottom anchored to 22% (= ice top).
+  // Iceberg silhouettes — bottom edge dips 3% INTO the ice plane so the
+  // wet-base ellipses merge with the snowfield instead of stopping at a line.
   &__icebergs {
     position: absolute;
-    bottom: 22%;
-    height: 22%;
+    bottom: 19%;
+    height: 24%;
     pointer-events: none;
-    svg { width: 100%; height: 100%; display: block; }
+    svg { width: 100%; height: 100%; display: block; overflow: visible; }
     &--back {
       left: -50%;
       width: 200%;
-      bottom: 24%;
+      bottom: 22%;
       height: 14%;
       opacity: .55;
       filter: blur(.5px);
