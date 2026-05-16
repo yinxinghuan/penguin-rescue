@@ -16,6 +16,7 @@ interface SceneProps {
   stickRef: React.MutableRefObject<Stick>;
   onScore: (s: number) => void;
   onGameOver: (final: number) => void;
+  onChainBroken?: (lostCount: number) => void;
   playSfx: (k: any) => void;
   haptic?: (k: 'light' | 'heavy') => void;
 }
@@ -112,13 +113,14 @@ function ActorSync({ state }: { state: React.MutableRefObject<GameRef> }) {
   );
 }
 
-export function Scene({ state, playing, stickRef, onScore, onGameOver, playSfx, haptic }: SceneProps) {
+export function Scene({ state, playing, stickRef, onScore, onGameOver, onChainBroken, playSfx, haptic }: SceneProps) {
   useGameLoop({
     state,
     playing,
     stick: stickRef.current,
     onScore,
     onGameOver,
+    onChainBroken,
     playSfx,
     haptic,
   });

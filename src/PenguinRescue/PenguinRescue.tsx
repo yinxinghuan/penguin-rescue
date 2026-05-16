@@ -21,6 +21,9 @@ export function PenguinRescue() {
   const [highScore, setHighScore] = useState<number>(() => Number(localStorage.getItem(HIGH_KEY) || 0));
   const [finalScore, setFinalScore] = useState(0);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  // Floating "-N" indicator for seal hits. `key` forces React to remount the
+  // node so the CSS animation replays even on consecutive hits.
+  const [chainBroken, setChainBroken] = useState<{ key: number; count: number } | null>(null);
 
   const stateRef = useRef(createGameState());
   const { stickRef, view } = useJoystick(phase === 'playing');
@@ -35,6 +38,13 @@ export function PenguinRescue() {
   }, []);
 
   const onScore = useCallback((s: number) => setScore(s), []);
+
+  const onChainBroken = useCallback((lostCount: number) => {
+    const key = Date.now();
+    setChainBroken({ key, count: lostCount });
+    // Clear after the longest animation finishes so the DOM stays clean.
+    setTimeout(() => setChainBroken(cur => (cur && cur.key === key ? null : cur)), 1600);
+  }, []);
 
   const onGameOver = useCallback((final: number) => {
     setFinalScore(final);
@@ -76,6 +86,7 @@ export function PenguinRescue() {
               stickRef={stickRef}
               onScore={onScore}
               onGameOver={onGameOver}
+              onChainBroken={onChainBroken}
               playSfx={playSfx}
               haptic={haptic}
             />
@@ -97,6 +108,18 @@ export function PenguinRescue() {
             )}
           </div>
           <img className="pr__watermark" src={alteruSvg} alt="AlterU" />
+        </div>
+      )}
+
+      {/* Seal-hit feedback: full-screen red flash + floating "-N" near the score */}
+      {chainBroken && (
+        <div className="pr__chain-break" key={chainBroken.key}>
+          <div className="pr__chain-break-flash" />
+          <div className="pr__chain-break-pellet">
+            <span className="pr__chain-break-minus">−</span>
+            <span className="pr__chain-break-count">{chainBroken.count}</span>
+          </div>
+          <div className="pr__chain-break-label">CHAIN BROKEN</div>
         </div>
       )}
 

@@ -58,11 +58,12 @@ export interface GameLoopParams {
   stick: Stick;
   onScore: (s: number) => void;
   onGameOver: (finalScore: number) => void;
+  onChainBroken?: (lostCount: number) => void;
   playSfx: (key: 'chirp_short' | 'chirp_help' | 'chirp_happy' | 'skua_cry' | 'bonk' | 'game_over') => void;
   haptic?: (kind: 'light' | 'heavy') => void;
 }
 
-export function useGameLoop({ state, playing, stick, onScore, onGameOver, playSfx, haptic }: GameLoopParams) {
+export function useGameLoop({ state, playing, stick, onScore, onGameOver, onChainBroken, playSfx, haptic }: GameLoopParams) {
   // Spawn icebergs whenever we encounter an uninitialized state (handles restart).
   if (!state.current.initialized) {
     const list: Iceberg[] = [];
@@ -275,6 +276,10 @@ export function useGameLoop({ state, playing, stick, onScore, onGameOver, playSf
             vy: Math.random() * 15 + 10,
           });
         }
+        // Chain broken — fire callback BEFORE clearing so the UI can show
+        // the lost count as a floating "-N" indicator.
+        const lostCount = d.bodyParts.length;
+        if (lostCount > 0) onChainBroken?.(lostCount);
         d.bodyParts = [];
         d.score = 0;
         onScore(0);

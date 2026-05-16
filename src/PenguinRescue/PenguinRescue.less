@@ -159,16 +159,21 @@
   &__cta:active { transform: translateY(2px); }
   &__final-score {
     font-family: 'Baloo 2', sans-serif;
-    font-size: 144px;
+    font-size: 128px;
     font-weight: 800;
     margin: 0;
-    line-height: 1;
-    letter-spacing: -.04em;
+    line-height: 1.1;
+    letter-spacing: -.01em;
+    // Internal padding gives the filter drop-shadow + Baloo 2 glyph ink
+    // (which extends past the advance width on chars like "2") room to render
+    // without being clipped by the flex-shrunk box.
+    padding: 0 .12em;
+    max-width: 100%;
     background: linear-gradient(180deg, #ffe17a 0%, #ff9844 70%, #ff6b3a 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
-    filter: drop-shadow(0 16px 36px rgba(255, 150, 60, .3));
+    filter: drop-shadow(0 14px 30px rgba(255, 150, 60, .3));
   }
   &__final {
     margin: 14px 0 32px;
@@ -196,6 +201,60 @@
     -webkit-backdrop-filter: blur(8px);
   }
 
+  // ===== Seal-hit feedback =====
+  &__chain-break {
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+    pointer-events: none;
+    font-family: 'Baloo 2', sans-serif;
+  }
+  // Full-screen red flash that pulses once
+  &__chain-break-flash {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(60% 60% at 50% 50%, rgba(255, 80, 50, .35) 0%, rgba(255, 80, 50, 0) 75%);
+    animation: pr-chain-break-flash .5s ease-out forwards;
+  }
+  // Floating "-N" red pellet above the score HUD, rises and fades.
+  &__chain-break-pellet {
+    position: absolute;
+    top: 88px;
+    left: 22px;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    color: #ff5b3a;
+    font-weight: 800;
+    text-shadow: 0 4px 18px rgba(255, 80, 50, .65);
+    animation: pr-chain-break-pellet 1.4s cubic-bezier(.22,.61,.36,1) forwards;
+  }
+  &__chain-break-minus {
+    font-size: 36px;
+    line-height: 1;
+    letter-spacing: -.04em;
+  }
+  &__chain-break-count {
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: -.02em;
+  }
+  // Centered banner for stronger emphasis
+  &__chain-break-label {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ff7a55;
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: .12em;
+    text-shadow:
+      0 4px 0  rgba(255, 80, 50, .10),
+      0 8px 28px rgba(255, 80, 50, .55);
+    animation: pr-chain-break-label 1.2s ease-out forwards;
+  }
+
   &__pellet {
     position: absolute;
     color: #ffe17a;
@@ -211,4 +270,21 @@
   0%   { opacity: 0; transform: translate(-50%, 0)   scale(.7); }
   20%  { opacity: 1; transform: translate(-50%, -8px) scale(1.1); }
   100% { opacity: 0; transform: translate(-50%, -60px) scale(.9); }
+}
+
+@keyframes pr-chain-break-flash {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes pr-chain-break-pellet {
+  0%   { opacity: 0; transform: translate(0, 10px) scale(.7); }
+  15%  { opacity: 1; transform: translate(0, -4px) scale(1.18); }
+  35%  { opacity: 1; transform: translate(0, -14px) scale(1.0); }
+  100% { opacity: 0; transform: translate(0, -90px) scale(.85); }
+}
+@keyframes pr-chain-break-label {
+  0%   { opacity: 0; transform: translate(-50%, -30%) scale(.85); }
+  18%  { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+  35%  { opacity: 1; transform: translate(-50%, -50%) scale(1.0); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(.95); }
 }
