@@ -261,28 +261,34 @@ export function useGameLoop({ state, playing, stick, onScore, onGameOver, onChai
       if (hit) {
         playSfx('bonk');
         haptic?.('heavy');
-        // launch every body part back as a stray baby
-        for (const seg of d.bodyParts) {
-          const a = Math.random() * Math.PI * 2;
-          const launch = 5;
-          d.babies.push({
-            id: Math.random(),
-            position: new THREE.Vector3(
-              seg.position.x + Math.cos(a) * launch,
-              seg.position.y,
-              seg.position.z + Math.sin(a) * launch,
-            ),
-            colorType: seg.colorType,
-            vy: Math.random() * 15 + 10,
-          });
+        // Lose a RANDOM PORTION of the chain — 40-75% of the current length,
+        // always at least 1. The back of the chain (furthest from the leader)
+        // takes the hit; the front stays attached. Lets a long chain survive
+        // a seal hit without zeroing the run.
+        const chainLen = d.bodyParts.length;
+        if (chainLen > 0) {
+          const fraction = 0.4 + Math.random() * 0.35;
+          const lostCount = Math.min(chainLen, Math.max(1, Math.ceil(chainLen * fraction)));
+          const lost = d.bodyParts.splice(d.bodyParts.length - lostCount, lostCount);
+          // launch each lost segment back as a stray baby
+          for (const seg of lost) {
+            const a = Math.random() * Math.PI * 2;
+            const launch = 5;
+            d.babies.push({
+              id: Math.random(),
+              position: new THREE.Vector3(
+                seg.position.x + Math.cos(a) * launch,
+                seg.position.y,
+                seg.position.z + Math.sin(a) * launch,
+              ),
+              colorType: seg.colorType,
+              vy: Math.random() * 15 + 10,
+            });
+          }
+          d.score = Math.max(0, d.score - lostCount);
+          onScore(d.score);
+          onChainBroken?.(lostCount);
         }
-        // Chain broken — fire callback BEFORE clearing so the UI can show
-        // the lost count as a floating "-N" indicator.
-        const lostCount = d.bodyParts.length;
-        if (lostCount > 0) onChainBroken?.(lostCount);
-        d.bodyParts = [];
-        d.score = 0;
-        onScore(0);
         d.seals.splice(i, 1);
       }
     }
