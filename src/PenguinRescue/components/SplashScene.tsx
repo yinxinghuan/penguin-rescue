@@ -46,6 +46,9 @@ export function SplashScene({ onStart, highScore }: { onStart: () => void; highS
         ))}
       </div>
 
+      {/* Ice plane sits below the icebergs so they appear to be resting on it */}
+      <div className="pr-splash__ice" />
+
       {/* Iceberg silhouettes — back row drifts slowly, front row stationary */}
       <div className="pr-splash__icebergs pr-splash__icebergs--back">
         <svg viewBox="0 0 1200 240" preserveAspectRatio="xMidYEnd meet" width="200%" height="100%">
@@ -75,9 +78,6 @@ export function SplashScene({ onStart, highScore }: { onStart: () => void; highS
           <polygon fill="#6996b6" points="760,200 830,130 900,200" />
         </svg>
       </div>
-
-      {/* ice plane base */}
-      <div className="pr-splash__ice" />
 
       {/* foreground content */}
       <div className="pr-splash__content">

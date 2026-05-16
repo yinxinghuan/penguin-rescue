@@ -125,11 +125,9 @@ export function PenguinRescue() {
           <button className="pr__cta" onPointerDown={start}>
             {t('again')}
           </button>
-          {isInAigram && (
-            <button className="pr__leaderboard-btn" onPointerDown={() => setShowLeaderboard(true)}>
-              {t('leaderboard')}
-            </button>
-          )}
+          <button className="pr__leaderboard-btn" onPointerDown={() => setShowLeaderboard(true)}>
+            {t('leaderboard')}
+          </button>
         </div>
       )}
 
