@@ -18,7 +18,7 @@ const HIGH_KEY = 'penguin_rescue_high';
 export function PenguinRescue() {
   const [phase, setPhase] = useState<Phase>('splash');
   const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState<number>(() => Number(localStorage.getItem(HIGH_KEY) || 0));
+  const [highScore, setHighScore] = useState<number>(() => Number(alteruLocalStorage.getItem(HIGH_KEY) || 0));
   const [finalScore, setFinalScore] = useState(0);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   // Floating "-N" indicator for seal hits. `key` forces React to remount the
@@ -51,7 +51,7 @@ export function PenguinRescue() {
     setPhase('gameover');
     stopBgm();
     if (final > highScore) {
-      localStorage.setItem(HIGH_KEY, String(final));
+      alteruLocalStorage.setItem(HIGH_KEY, String(final));
       setHighScore(final);
     }
     submitScore(final).catch(() => { /* silent */ });
